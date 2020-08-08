@@ -1,0 +1,1 @@
+{"ast":null,"code":"export { default as Router } from \"./Route\";","map":{"version":3,"sources":["C:/Users/PC/Desktop/Blitz/src/routes/index.tsx"],"names":["default","Router"],"mappings":"AAAA,SAASA,OAAO,IAAIC,MAApB","sourcesContent":["export { default as Router } from './Route'"]},"metadata":{},"sourceType":"module"}

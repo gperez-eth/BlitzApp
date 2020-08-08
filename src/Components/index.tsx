@@ -1,0 +1,6 @@
+export { default as LoadAssets } from './LoadAssets'
+export { default as Categoria } from './Categoria'
+export { default as Slide } from './Slide'
+export { default as CategorySlider } from './CategorySlider'
+export { default as TutorialCard } from './TutorialCard'
+export { default as PublishButton } from './PublishButton'

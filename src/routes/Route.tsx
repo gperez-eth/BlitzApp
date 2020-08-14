@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, HeaderStyleInterpolators, CardStyleInterpolators } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { Home, Explore, ExploreCategory, Upload } from '../Screens'
+import { Home, Explore, ExploreCategory, Upload, UploadingTransition } from '../Screens'
 import { LoadAssets } from '../Components'
 
 const fonts = {
@@ -63,6 +63,11 @@ function UploadStackScreen() {
         options={({navigation}) => ({
           headerTitleStyle: { fontSize: 30, fontFamily: 'Bold' },
           headerTitle: 'Publicar'
+        })}
+      />
+      <UploadStack.Screen name="UploadingTransition" component={UploadingTransition}
+        options={({navigation}) => ({
+          headerShown: false
         })}
       />
     </UploadStack.Navigator>

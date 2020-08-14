@@ -6,6 +6,7 @@ import { TouchableOpacity, FlatList, ScrollView } from 'react-native-gesture-han
 import { Ionicons } from '@expo/vector-icons';
 import ActionButton from 'react-native-action-button';
 import { PublishButton } from '../Components'
+import Fire from '../database/Fire'
 
 
 const Upload = ({ navigation }) => {
@@ -16,6 +17,27 @@ const Upload = ({ navigation }) => {
         if (formRef.current) {
           formRef.current.handleSubmit()
         }
+    }
+    
+    const addTutorial = (values) => {
+        var bd = new Fire((error, user) => {
+            if (error) {
+              return alert("Oh oh, something went wrong" + error)
+            } else {
+                bd.addTutorial(values, nImages, id => {
+                    navigation.navigate('UploadingTransition', {id: id})
+                })
+                clearFields()
+            }
+        })
+    }
+
+    const clearFields = () => {
+         // Clear all fields and images
+         if (formRef.current) {
+            formRef.current.resetForm()
+            setNImages([{image: false, uri: '', key: '1'}])
+         }
     }
 
     const addStep = () => {
@@ -63,6 +85,7 @@ const Upload = ({ navigation }) => {
                 initialValues={{title: '', category: '', dificulty: '', steps: [{description: ''},]}}
                 onSubmit={(values) => {
                     console.log(values)
+                    addTutorial(values)
                 }}>
                     {({ handleChange, handleSubmit, values }) => (
                         <View>

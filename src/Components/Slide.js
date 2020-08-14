@@ -8,9 +8,9 @@ const screenHeight = Dimensions.get('window').height;
 const Slide = ({ list }) => {
   return (
     <View style={styles.container}>
-        <Image resizeMode="cover" source={list.image && { uri: list.image }} style={styles.image}/>
+        <Image resizeMode="contain" source={list.image[1] && { uri: list.image[1] }} style={styles.image}/>
         <View style={styles.textContainer}>
-            <Text style={styles.title}>{list.titulo}</Text>
+            <Text style={styles.title}>{list.title}</Text>
         </View>
     </View>
   );

@@ -1,5 +1,5 @@
 import React, {useState, useEffect, Component} from 'react';
-import { Text, View, StyleSheet, Dimensions } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, RefreshControl } from 'react-native';
 import { ScrollView, TouchableOpacity, FlatList } from 'react-native-gesture-handler';
 import { Slide, CategorySlider, TutorialCard } from '../Components'
 import Animated from 'react-native-reanimated'
@@ -15,20 +15,6 @@ const categorias = [
   {icon: 'ios-flask', title: 'Ciencias', color: '#FF62D3', key: '7'},
   {icon: 'ios-code', title: 'Coding', color: '#807D7D', key: '8'},
   {icon: 'logo-game-controller-b', title: 'Gaming', color: '#0029B9', key: '9'},
-]
-
-const tutoriales = [
-  {title: '6-Pack Abs Routine', image: require('../../assets/images/girl-sport.jpg'), fecha: '26/11/2020', categoria: 'Deporte', likes: '23', dificultad: 7, key: '1'},
-  {title: 'How to do Italian pasta', image: require('../../assets/images/pasta.jpg'), fecha: '26/11/2020', categoria: 'Deporte', likes: '23', dificultad: 7, key: '2'},
-  {title: 'Get aim on shooters', image: require('../../assets/images/shooter.jpg'), fecha: '26/11/2020', categoria: 'Deporte', likes: '23', dificultad: 7, key: '3'},
-  {title: 'How to do Italian pasta', image: require('../../assets/images/pasta.jpg'), fecha: '26/11/2020', categoria: 'Deporte', likes: '23', dificultad: 7, key: '4'},
-  {title: 'How to do Italian pasta', image: require('../../assets/images/pasta.jpg'), fecha: '26/11/2020', categoria: 'Deporte', likes: '23', dificultad: 7, key: '5'},
-  {title: 'How to do Italian pasta', image: require('../../assets/images/pasta.jpg'), fecha: '26/11/2020', categoria: 'Deporte', likes: '23', dificultad: 7, key: '6'},
-  {title: 'How to do Italian pasta', image: require('../../assets/images/pasta.jpg'), fecha: '26/11/2020', categoria: 'Deporte', likes: '23', dificultad: 7, key: '7'},
-  {title: 'How to do Italian pasta', image: require('../../assets/images/pasta.jpg'), fecha: '26/11/2020', categoria: 'Deporte', likes: '23', dificultad: 7, key: '8'},
-  {title: 'How to do Italian pasta', image: require('../../assets/images/pasta.jpg'), fecha: '26/11/2020', categoria: 'Deporte', likes: '23', dificultad: 7, key: '9'},
-  {title: 'How to do Italian pasta', image: require('../../assets/images/pasta.jpg'), fecha: '26/11/2020', categoria: 'Deporte', likes: '23', dificultad: 7, key: '10'},
-  {title: 'How to do Italian pasta', image: require('../../assets/images/pasta.jpg'), fecha: '26/11/2020', categoria: 'Deporte', likes: '23', dificultad: 7, key: '11'},
 ]
 
 const screenHeight = Dimensions.get('window').height;
@@ -47,27 +33,42 @@ const AnimateHeaderHeight = scrollY.interpolate(
 
     state = {
       featured: [],
+      tutoriales: [],
       user: {},
-      loading: true
+      loading: true,
+      refreshing: false
     }
 
-    componentDidMount() {
+    constructor(props) {
+      super(props)
+      this.loadData()
+    }
+
+    async loadData() {
       var bd = new Fire((error, user) => {
         if (error) {
           return alert("Oh oh, something went wrong" + error)
         } else {
-        bd.getFeatured(featured => {
-            this.setState({featured, user}, () => {
+          bd.getFeatured(featured => {
+              this.setState({featured, user})
+          })
+          bd.getTutoriales(tutoriales => {
+            this.setState({tutoriales}, () => {
               this.setState({loading: false})
             })
           })
-          return alert("Logged " + user.uid)
         }
       })
     }
 
-    renderList = featured => {
+    renderFeatured = featured => {
       return <Slide list={featured}/>
+    }
+
+    renderTutoriales = tutoriales => {
+      if(tutoriales) {
+        return <TutorialCard list={tutoriales} />
+      }
     }
 
     render() {
@@ -75,8 +76,8 @@ const AnimateHeaderHeight = scrollY.interpolate(
       return (
           <View style={styles.content}>
             <Animated.View style={{height: AnimateHeaderHeight}}>
-              <ScrollView decelerationRate={0} snapToInterval={300} showsHorizontalScrollIndicator={false} bounces={true} style={{paddingLeft: 15, marginBottom: 10}}>
-                <FlatList horizontal showsHorizontalScrollIndicator={false} data={this.state.featured} renderItem={({item}) => this.renderList(item)}/>
+              <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={() => this.loadData()} />} decelerationRate={0} snapToInterval={300} showsHorizontalScrollIndicator={false} bounces={true} style={{paddingLeft: 15, marginBottom: 10}}>
+                <FlatList horizontal showsHorizontalScrollIndicator={false} data={this.state.featured} renderItem={({item}) => this.renderFeatured(item)}/>
               </ScrollView>
             </Animated.View>
             <View style={styles.categorySelector}>
@@ -96,9 +97,9 @@ const AnimateHeaderHeight = scrollY.interpolate(
                     nativeEvent: { contentOffset: { y: scrollY }}
                   }])}
                 >
-                  {tutoriales.map((item) => {
+                  {this.state.tutoriales.map((item) => {
                     return (
-                      <TutorialCard title={item.title} image={item.image} likes={item.likes} dificultad={item.dificultad} key={item.key}/>
+                      this.renderTutoriales(item)
                     )
                   })}
                 </Animated.ScrollView>

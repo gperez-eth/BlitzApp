@@ -8,15 +8,38 @@ import { AntDesign } from '@expo/vector-icons';
 
 const screenWidth = Math.round(Dimensions.get('window').width);
 
+function renderStatus(status) {
+  if (status.steps || status.images) {
+    return (
+      <View style={styles.content}>
+        <Ionicons name="ios-checkmark-circle" size={100} color="#B9B3FF" />
+        <Text style={styles.text}>El tutorial se ha subido correctamente!</Text>
+      </View>
+    )
+    
+  } else if (status.error) {
+    return (
+      <View style={styles.content}>
+        <AntDesign name="minuscircle" size={100} color="#B9B3FF" />
+        <Text style={styles.text}>Error! compruebe que las imagenes tienen un formato correcto</Text>
+      </View>
+    )
+  } else {
+    return (
+      <View style={styles.content}>
+        <AntDesign name="questioncircle" size={100} color="#B9B3FF" />
+        <Text style={styles.text}>Ha ocurrido un error inesperado :(</Text>
+      </View>
+    )
+  }
+}
+
 const UploadingTransition = ({ route, navigation }) => {
-  const { id } = route.params;
-  console.log(id)
+  const { status } = route.params;
+  console.log(status)
   return (
     <View style={styles.container}>
-        <View style={styles.content}>
-            <Ionicons name="ios-checkmark-circle" size={100} color="#B9B3FF" />
-            <Text>{id}</Text>
-        </View>
+        {renderStatus(status)}
     </View>
   );
 };
@@ -32,5 +55,10 @@ const styles = StyleSheet.create({
   },
   content: {
     alignItems: 'center',
+  },
+  text: {
+    fontFamily: 'Semibold',
+    fontSize: 25,
+    textAlign: 'center'
   }
 });

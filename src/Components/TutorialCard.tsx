@@ -5,20 +5,20 @@ import { Ionicons } from '@expo/vector-icons';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const TutorialCard = ({ title, image, likes, dificultad }) => {
+const TutorialCard = ({ list }) => {
   return (
     <View style={styles.container}>
         <View style={styles.cardImage}>
-          <Image resizeMode="cover" source={image} style={styles.image}/>
+          <Image resizeMode="cover" source={list.image[0] && { uri: list.image[0] }} style={styles.image}/>
         </View>
         <View style={styles.infoContainer}>
           <View style={styles.textContainer}>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={styles.title}><Ionicons name={'ios-stats'} color={'green'} size={20} style={{marginRight: 10}}/> {dificultad}</Text>
+            <Text style={styles.title}>{list.title}</Text>
+            <Text style={styles.title}><Ionicons name={'ios-stats'} color={'green'} size={20} style={{marginRight: 10}}/> {list.dificulty}</Text>
             <View style={{flexDirection: 'row', alignItems: 'flex-end', flex: 1, }}>
               <View style={{flexDirection: 'row', alignItems: 'center',}}>
                 <Ionicons name={'ios-heart'} color={'red'} size={20} style={{marginRight: 5}}/>
-                <Text style={styles.title}>{likes}</Text>
+                <Text style={styles.title}>{list.likes}</Text>
               </View>
             </View>
           </View>

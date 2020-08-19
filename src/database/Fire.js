@@ -47,23 +47,43 @@ class Fire {
                 tutoriales.push({ 'id': doc.id, ...doc.data() })
             })
 
-            console.log(tutoriales)
-
             callback(tutoriales)
+        })
+    }
+
+    getTutoriales(callback) {
+        let loaded = true
+        let ref = this.ref.limit(15)
+        this.unsubscribe = ref.onSnapshot(snapshot => {
+            tutoriales = []
+
+            snapshot.forEach(doc  => {
+                tutoriales.push({ 'id': doc.id, ...doc.data() })
+            })
+
+            tutoriales.forEach(obj => {
+                if(!obj.image) {
+                    loaded = false
+                }
+            })
+
+            if(loaded) {
+                callback(tutoriales)
+            }
         })
     }
 
     addTutorial(tutorial, images, callback) {
         let id = ''
         let ref = this.ref
+        let uploadStatus = {steps: false, images: false, error: false}
+
         ref.add(tutorial).then(function(docRef) {
             console.log("Document written with ID: ", docRef.id);
             id = docRef.id
-            callback(id)
         })
 
-
-        images.forEach( async obj => {
+        images.forEach( async function(obj, i) {
             if (obj.image) {
 
                 var response = await fetch(obj.uri)
@@ -84,6 +104,11 @@ class Fire {
                 }, function(error) {
                     // Handle unsuccessful uploads
                     console.log('Error during the upload :(')
+                    uploadStatus.steps = false
+                    uploadStatus.images = false
+                    uploadStatus.error = true
+                    callback(uploadStatus)
+                    return
                 }, () => {
                     storageRef.getDownloadURL().then((downloadUrl) => {
                         console.log("File available at: " + downloadUrl);
@@ -91,9 +116,15 @@ class Fire {
                             {image: firebase.firestore.FieldValue.arrayUnion(downloadUrl)}
                         )
                     })
+                    if (i == (images.length -1)) {
+                        uploadStatus.images = true
+                        callback(uploadStatus)
+                    }
                 })
             } else {
                 console.log("Skipping image upload");
+                uploadStatus.steps = true
+                callback(uploadStatus)
             }
         })
     }

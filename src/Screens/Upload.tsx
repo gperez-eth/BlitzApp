@@ -24,8 +24,8 @@ const Upload = ({ navigation }) => {
             if (error) {
               return alert("Oh oh, something went wrong" + error)
             } else {
-                bd.addTutorial(values, nImages, id => {
-                    navigation.navigate('UploadingTransition', {id: id})
+                bd.addTutorial(values, nImages, status => {
+                    navigation.navigate('UploadingTransition', {status: status})
                 })
                 clearFields()
             }

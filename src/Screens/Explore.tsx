@@ -65,9 +65,9 @@ const AnimateHeaderHeight = scrollY.interpolate(
       return <Slide list={featured}/>
     }
 
-    renderTutoriales = tutoriales => {
+    renderTutoriales = (navigation, tutoriales) => {
       if(tutoriales) {
-        return <TutorialCard list={tutoriales} />
+        return <TutorialCard navigation={navigation} list={tutoriales} />
       }
     }
 
@@ -99,7 +99,7 @@ const AnimateHeaderHeight = scrollY.interpolate(
                 >
                   {this.state.tutoriales.map((item) => {
                     return (
-                      this.renderTutoriales(item)
+                      this.renderTutoriales(navigation, item)
                     )
                   })}
                 </Animated.ScrollView>

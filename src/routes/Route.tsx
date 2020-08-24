@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, HeaderStyleInterpolators, CardStyleInterpolators } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { Home, Explore, ExploreCategory, Upload, UploadingTransition } from '../Screens'
+import { Home, Explore, ExploreCategory, Upload, UploadingTransition, ViewTutorial } from '../Screens'
 import { LoadAssets } from '../Components'
 
 const fonts = {
@@ -48,6 +48,12 @@ function ExploreStackScreen() {
           title: route.params.title,
           headerTitleStyle: { fontSize: 25, fontFamily: 'Bold' },
           gestureDirection: "horizontal",
+        })}
+      />
+      <ExploreStack.Screen name="ViewTutorial" component={ViewTutorial} 
+        options={({ navigation }) => ({
+          gestureDirection: "horizontal",
+          headerShown: false
         })}
       />
     </ExploreStack.Navigator>

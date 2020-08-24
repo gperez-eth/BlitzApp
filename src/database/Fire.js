@@ -52,24 +52,16 @@ class Fire {
     }
 
     getTutoriales(callback) {
-        let loaded = true
         let ref = this.ref.limit(15)
         this.unsubscribe = ref.onSnapshot(snapshot => {
             tutoriales = []
 
             snapshot.forEach(doc  => {
-                tutoriales.push({ 'id': doc.id, ...doc.data() })
-            })
-
-            tutoriales.forEach(obj => {
-                if(!obj.image) {
-                    loaded = false
+                if (doc.data().image) {
+                    tutoriales.push({ 'id': doc.id, ...doc.data() })
                 }
             })
-
-            if(loaded) {
-                callback(tutoriales)
-            }
+            callback(tutoriales)
         })
     }
 

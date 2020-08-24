@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { Text, View, StyleSheet, Dimensions, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const TutorialCard = ({ list }) => {
+const TutorialCard = ({ navigation, list }) => {
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} activeOpacity={0.8} onPress={() => navigation.navigate('ViewTutorial', {tutorial: list})}>
         <View style={styles.cardImage}>
           <Image resizeMode="cover" source={list.image[0] && { uri: list.image[0] }} style={styles.image}/>
         </View>
@@ -23,7 +24,7 @@ const TutorialCard = ({ list }) => {
             </View>
           </View>
         </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

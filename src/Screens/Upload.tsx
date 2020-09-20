@@ -7,9 +7,46 @@ import { Ionicons } from '@expo/vector-icons';
 import ActionButton from 'react-native-action-button';
 import { PublishButton } from '../Components'
 import Fire from '../database/Fire'
-
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const Upload = ({ navigation }) => {
+
+    const [activeColor, setActiveColor] = React.useState(
+        {primary: '#55CA4B', secondary: '#92E18B'},
+    );
+
+    const changeColors = (category) => {
+        console.log(category)
+        switch(category) {
+            case 'Deporte':
+                setActiveColor({primary: '#FF7070', secondary: '#EE9393'})
+                break
+            case 'Cocina':
+                setActiveColor({primary: '#FFAD61', secondary: '#FFC793'})
+                break
+            case 'Música':
+                setActiveColor({primary: '#55CA4B', secondary: '#92E18B'})
+                break
+            case 'Fotografía':
+                setActiveColor({primary: '#5297FF', secondary: '#90BCFF'})
+                break
+            case 'Literatura':
+                setActiveColor({primary: '#926CFF', secondary: '#BAA2FF'})
+                break
+            case 'Arte':
+                setActiveColor({primary: '#D55FFF', secondary: '#E7A3FF'})
+                break
+            case 'Ciencias':
+                setActiveColor({primary: '#FF62D3', secondary: '#FFB3EA'})
+                break
+            case 'Coding':
+                setActiveColor({primary: '#807D7D', secondary: '#C1C1C1'})
+                break
+            case 'Gaming':
+                setActiveColor({primary: '#0029B9', secondary: '#6477B9'})
+                break
+        }
+    }
 
     const formRef = React.useRef()
 
@@ -82,7 +119,7 @@ const Upload = ({ navigation }) => {
         <View style={styles.formContainer}>
             <Formik
                 innerRef={formRef}
-                initialValues={{title: '', category: '', dificulty: '', steps: [{description: ''},]}}
+                initialValues={{title: '', category: 'Música', dificulty: '', steps: [{description: ''},]}}
                 onSubmit={(values) => {
                     console.log(values)
                     addTutorial(values)
@@ -90,9 +127,9 @@ const Upload = ({ navigation }) => {
                     {({ handleChange, handleSubmit, values }) => (
                         <View>
                             <View style={styles.inputFrame}>
-                                <Text style={styles.fields}>Titulo*</Text>
+                                <Text style={[styles.fields, {color: activeColor.primary}]}>Titulo*</Text>
                                 <TextInput
-                                    style={styles.inputs}
+                                    style={[styles.inputs, {borderColor: activeColor.primary}]}
                                     onChangeText={handleChange('title')}
                                     placeholder='Construir...'
                                     value={values.title}
@@ -100,19 +137,36 @@ const Upload = ({ navigation }) => {
                             </View>
 
                             <View style={styles.inputFrame}>
-                                <Text style={styles.fields}>Categoría*</Text>
-                                <TextInput
-                                    style={styles.inputs}
-                                    onChangeText={handleChange('category')}
-                                    placeholder='Gimnasio'
-                                    value={values.category}
+                                <Text style={[styles.fields, {color: activeColor.primary, marginBottom: 10}]}>Categoría*</Text>
+                                <DropDownPicker
+                                    style={[styles.inputs, {backgroundColor: '#F5F5F5'}]}
+                                    items={[
+                                        {label: 'Deporte', value: 'Deporte', icon: () => <Ionicons name={'ios-fitness'} color={'#FF7070'} size={30} />},
+                                        {label: 'Cocina', value: 'Cocina', icon: () => <Ionicons name={'ios-restaurant'} color={'#FFAD61'} size={30} />},
+                                        {label: 'Música', value: 'Música', icon: () => <Ionicons name={'ios-musical-notes'} color={'#55CA4B'} size={30} />},
+                                        {label: 'Fotografía', value: 'Fotografía', icon: () => <Ionicons name={'ios-camera'} color={'#5297FF'} size={30} />},
+                                        {label: 'Literatura', value: 'Literatura', icon: () => <Ionicons name={'ios-book'} color={'#926CFF'} size={30} />},
+                                        {label: 'Arte', value: 'Arte', icon: () => <Ionicons name={'ios-brush'} color={'#D55FFF'} size={30} />},
+                                        {label: 'Ciencias', value: 'Ciencias', icon: () => <Ionicons name={'ios-flask'} color={'#FF62D3'} size={30} />},
+                                        {label: 'Coding', value: 'Coding', icon: () => <Ionicons name={'ios-code'} color={'#807D7D'} size={30} />},
+                                        {label: 'Gaming', value: 'Gaming', icon: () => <Ionicons name={'logo-game-controller-b'} color={'#0029B9'} size={30} />},
+                                    ]}
+                                    defaultValue='Música'
+                                    labelStyle={{ marginLeft: 10, alignSelf: 'center'}}
+                                    itemStyle={{ justifyContent: 'flex-start' }}
+                                    dropDownStyle={{backgroundColor: '#F5F5F5', borderBottomWidth: 1, borderColor: activeColor.secondary, height: 300}}
+                                    onChangeItem={item => {
+                                            values.category = item.value
+                                            changeColors(item.value)
+                                        }
+                                    }
                                 />
                             </View>
 
                             <View style={styles.inputFrame}>
-                                <Text style={styles.fields}>Dificultad*</Text>
+                                <Text style={[styles.fields, {color: activeColor.primary}]}>Dificultad*</Text>
                                 <TextInput
-                                    style={styles.inputs}
+                                    style={[styles.inputs, {borderColor: activeColor.primary}]}
                                     onChangeText={handleChange('dificulty')}
                                     placeholder='5'
                                     keyboardType='numeric'
@@ -123,9 +177,9 @@ const Upload = ({ navigation }) => {
                             {values.steps.map((item, index) => {
                                 return (
                                     <View style={styles.inputFrame}>
-                                        <Text style={styles.fields}>Paso {index+1}*</Text>
+                                        <Text style={[styles.fields, {color: activeColor.primary}]}>Paso {index+1}*</Text>
                                         <TextInput
-                                            style={styles.inputs}
+                                            style={[styles.inputs, {borderColor: activeColor.primary}]}
                                             multiline={true}
                                             onChangeText={handleChange(`steps[${index}].description`)}
                                             placeholder='bla bla bla...'
@@ -136,15 +190,15 @@ const Upload = ({ navigation }) => {
                             })}
 
                             <View style={styles.inputFrame}>
-                                <Text style={styles.fields}>Imagenes</Text>
+                                <Text style={[styles.fields, {color: activeColor.primary}]}>Imagenes</Text>
                                 <FlatList horizontal showsHorizontalScrollIndicator={false} data={nImages}
                                     renderItem={({item}) => 
                                         item.image ?
-                                            <TouchableOpacity activeOpacity={0.8} onPress={() => openImagePickerAsync(item.key)} style={styles.imagePicker}>
+                                            <TouchableOpacity activeOpacity={0.8} onPress={() => openImagePickerAsync(item.key)} style={[styles.imagePicker, {backgroundColor: activeColor.secondary}]}>
                                                 <Image source={{uri: item.uri}} style={styles.images}/>
                                             </TouchableOpacity>
                                         : 
-                                            <TouchableOpacity activeOpacity={0.8} onPress={() => openImagePickerAsync(item.key)} style={styles.imagePicker}>
+                                            <TouchableOpacity activeOpacity={0.8} onPress={() => openImagePickerAsync(item.key)} style={[styles.imagePicker, {backgroundColor: activeColor.secondary}]}>
                                                 <Ionicons name={'ios-images'} color={'white'} size={30} />
                                             </TouchableOpacity>
                                     }/>
@@ -155,8 +209,8 @@ const Upload = ({ navigation }) => {
         </View>
         
         </ScrollView>
-        <PublishButton onPress={handleSubmit} color='#B062FF' />
-        <ActionButton buttonColor="#C7B3FF"
+        <PublishButton onPress={handleSubmit} color={activeColor.primary} />
+        <ActionButton buttonColor={activeColor.secondary}
             onPress={() => {
                 setNImages((prevImages) => {
                     return [
@@ -184,13 +238,11 @@ const styles = StyleSheet.create({
     fields: {
         fontFamily: 'Regular',
         fontSize: 14,
-        color: '#B062FF'
     },
     inputs: {
         borderRadius: 2,
         padding: 5,
         borderBottomWidth: 1,
-        borderColor: '#B062FF'
     },
     inputFrame: {
         marginBottom: 10
@@ -204,14 +256,9 @@ const styles = StyleSheet.create({
         height: 110,
         width: 80,
         borderRadius: 15,
-        backgroundColor: '#D9B3FF',
         marginHorizontal: 10,
         marginTop: 10,
         alignItems: 'center',
         justifyContent: 'center'
     },
-    ActionButton: {
-        backgroundColor: 'blue'
-        
-    }
 });

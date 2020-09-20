@@ -10,7 +10,7 @@ const TutorialCard = ({ navigation, list }) => {
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.8} onPress={() => navigation.navigate('ViewTutorial', {tutorial: list})}>
         <View style={styles.cardImage}>
-          <Image resizeMode="cover" source={list.image[0] && { uri: list.image[0] }} style={styles.image}/>
+          <Image resizeMode="cover" source={list.image[0].url && { uri: list.image[0].url }} style={styles.image}/>
         </View>
         <View style={styles.infoContainer}>
           <View style={styles.textContainer}>

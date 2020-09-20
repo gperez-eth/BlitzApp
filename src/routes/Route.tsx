@@ -3,14 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, HeaderStyleInterpolators, CardStyleInterpolators } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { Home, Explore, ExploreCategory, Upload, UploadingTransition, ViewTutorial } from '../Screens'
-import { LoadAssets } from '../Components'
-
-const fonts = {
-  "Bold": require("../../assets/fonts/SF-Pro-Text-Bold.otf"),
-  "Semibold": require("../../assets/fonts/SF-Pro-Text-Semibold.otf"),
-  "Regular": require("../../assets/fonts/SF-Pro-Text-Regular.otf"),
-};
+import { Home, Explore, ExploreCategory, Upload, UploadingTransition, ViewTutorial, InProgress } from '../Screens'
 
 const HomeStack = createStackNavigator();
   
@@ -107,12 +100,12 @@ function BottomTabNavigator() {
           <Ionicons name={'ios-cloud-upload'} color={color} size={30} />
         ),
       }}/>
-      <Tab.Screen name="Archived" component={Home} options={{
+      <Tab.Screen name="Archived" component={InProgress} options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name={'md-bookmark'} color={color} size={30} />
         ),
       }}/>
-      <Tab.Screen name="Profile " component={Home} options={{
+      <Tab.Screen name="Profile " component={InProgress} options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name={'ios-contact'} color={color} size={30} />
         ),
@@ -123,8 +116,6 @@ function BottomTabNavigator() {
 
 export default function Router() {
     return (
-      <LoadAssets {...{ fonts }}>
         <BottomTabNavigator />
-      </LoadAssets>
     );
   }

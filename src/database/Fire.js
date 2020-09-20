@@ -2,36 +2,10 @@
  import "@firebase/firestore"
  import { v4 as uuidv4 } from 'uuid';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyAbjZ3J6HBB6UPW1013YwOU8wpsjONJ9wQ",
-    authDomain: "blitzexpo-3d09d.firebaseapp.com",
-    databaseURL: "https://blitzexpo-3d09d.firebaseio.com",
-    projectId: "blitzexpo-3d09d",
-    storageBucket: "blitzexpo-3d09d.appspot.com",
-    messagingSenderId: "776100349571",
-    appId: "1:776100349571:web:c0f748655fa7e91f79fdb6"
-  };
-
 class Fire {
 
     constructor(callback) {
-        this.init(callback)
-    }
 
-    init(callback) {
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig)
-        }
-        
-        firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-                callback(null, user)
-            } else {
-                firebase.auth().signInAnonymously().catch(error => {
-                    callback(error)
-                })
-            }
-        })
     }
     
     get ref() {
@@ -47,6 +21,12 @@ class Fire {
                 tutoriales.push({ 'id': doc.id, ...doc.data() })
             })
 
+            tutoriales.forEach(tut => {
+                tut.image.sort(function(a, b) {
+                    return a.number - b.number;
+                });
+            })
+
             callback(tutoriales)
         })
     }
@@ -60,6 +40,12 @@ class Fire {
                 if (doc.data().image) {
                     tutoriales.push({ 'id': doc.id, ...doc.data() })
                 }
+            })
+            
+            tutoriales.forEach(tut => {
+                tut.image.sort(function(a, b) {
+                    return a.number - b.number;
+                });
             })
             callback(tutoriales)
         })
@@ -105,7 +91,7 @@ class Fire {
                     storageRef.getDownloadURL().then((downloadUrl) => {
                         console.log("File available at: " + downloadUrl);
                         ref.doc(id).update(
-                            {image: firebase.firestore.FieldValue.arrayUnion(downloadUrl)}
+                            {image: firebase.firestore.FieldValue.arrayUnion({url: downloadUrl, number: i})}
                         )
                     })
                     if (i == (images.length -1)) {

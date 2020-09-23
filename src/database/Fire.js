@@ -2,10 +2,39 @@
  import "@firebase/firestore"
  import { v4 as uuidv4 } from 'uuid';
 
+ const firebaseConfig = {
+    apiKey: "AIzaSyAbjZ3J6HBB6UPW1013YwOU8wpsjONJ9wQ",
+    authDomain: "blitzexpo-3d09d.firebaseapp.com",
+    databaseURL: "https://blitzexpo-3d09d.firebaseio.com",
+    projectId: "blitzexpo-3d09d",
+    storageBucket: "blitzexpo-3d09d.appspot.com",
+    messagingSenderId: "776100349571",
+    appId: "1:776100349571:web:c0f748655fa7e91f79fdb6"
+  };
+
 class Fire {
 
     constructor(callback) {
-
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig)
+        }
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                var user = firebase.auth().currentUser;
+                user.updateProfile({
+                    displayName: "Dianna Smiley",
+                    photoURL: "https://firebasestorage.googleapis.com/v0/b/blitzexpo-3d09d.appspot.com/o/images%2F8dc3d9d0f97863b819d7c42fb06b2917.jpg?alt=media&token=6ec9513c-9822-4b09-9324-036c6780c94e"
+                  }).then(function() {
+                    console.log('update completed')
+                  }).catch(function(error) {
+                    console.log('update error', error)
+                  });
+                callback(null, user)
+            } else {
+                callback('Error')
+            }
+        })
     }
     
     get ref() {
@@ -51,7 +80,29 @@ class Fire {
         })
     }
 
+    getCategoryTutorial(category, callback) {
+        let ref = this.ref.where("category", "==", category)
+        this.unsubscribe = ref.onSnapshot(snapshot => {
+            tutoriales = []
+
+            snapshot.forEach(doc  => {
+                tutoriales.push({ 'id': doc.id, ...doc.data() })
+            })
+
+            tutoriales.forEach(tut => {
+                tut.image.sort(function(a, b) {
+                    return a.number - b.number;
+                });
+            })
+            callback(tutoriales)
+        })
+    }
+
     addTutorial(tutorial, images, callback) {
+
+        // put likes to 0
+        tutorial.likes = 0
+
         let id = ''
         let ref = this.ref
         let uploadStatus = {steps: false, images: false, error: false}

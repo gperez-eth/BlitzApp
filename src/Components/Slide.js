@@ -1,18 +1,19 @@
 import * as React from 'react';
 import { Text, View, StyleSheet, Image } from 'react-native';
 import { Dimensions } from "react-native";
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const Slide = ({ list }) => {
+const Slide = ({ navigation, list }) => {
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} activeOpacity={0.8} onPress={() => navigation.navigate('ViewTutorial', {tutorial: list})}>
         <Image resizeMode="cover" source={list.image[0].url && { uri: list.image[0].url }} style={styles.image}/>
         <View style={styles.textContainer}>
             <Text style={styles.title}>{list.title}</Text>
         </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -16,7 +16,6 @@ const Upload = ({ navigation }) => {
     );
 
     const changeColors = (category) => {
-        console.log(category)
         switch(category) {
             case 'Deporte':
                 setActiveColor({primary: '#FF7070', secondary: '#EE9393'})

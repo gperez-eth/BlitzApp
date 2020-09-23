@@ -61,8 +61,8 @@ const AnimateHeaderHeight = scrollY.interpolate(
       })
     }
 
-    renderFeatured = featured => {
-      return <Slide list={featured}/>
+    renderFeatured = (featured, navigation) => {
+      return <Slide navigation={navigation} list={featured}/>
     }
 
     renderTutoriales = (navigation, tutoriales) => {
@@ -77,7 +77,7 @@ const AnimateHeaderHeight = scrollY.interpolate(
           <View style={styles.content}>
             <Animated.View style={{height: AnimateHeaderHeight}}>
               <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={() => this.loadData()} />} decelerationRate={0} snapToInterval={300} showsHorizontalScrollIndicator={false} bounces={true} style={{paddingLeft: 15, marginBottom: 10}}>
-                <FlatList horizontal showsHorizontalScrollIndicator={false} data={this.state.featured} renderItem={({item}) => this.renderFeatured(item)}/>
+                <FlatList horizontal showsHorizontalScrollIndicator={false} data={this.state.featured} renderItem={({item}) => this.renderFeatured(item, navigation)}/>
               </ScrollView>
             </Animated.View>
             <View style={styles.categorySelector}>

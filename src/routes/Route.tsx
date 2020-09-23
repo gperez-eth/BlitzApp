@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, HeaderStyleInterpolators, CardStyleInterpolators } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { Home, Explore, ExploreCategory, Upload, UploadingTransition, ViewTutorial, InProgress } from '../Screens'
+import { Home, Explore, ExploreCategory, Upload, UploadingTransition, ViewTutorial, Profile, InProgress } from '../Screens'
 
 const HomeStack = createStackNavigator();
   
@@ -105,7 +105,7 @@ function BottomTabNavigator() {
           <Ionicons name={'md-bookmark'} color={color} size={30} />
         ),
       }}/>
-      <Tab.Screen name="Profile " component={InProgress} options={{
+      <Tab.Screen name="Profile " component={Profile} options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name={'ios-contact'} color={color} size={30} />
         ),

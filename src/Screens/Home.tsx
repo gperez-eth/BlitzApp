@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { Text, View, Button, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { Categoria } from '../Components'
 import { Dimensions } from "react-native";
-
-const screenWidth = Math.round(Dimensions.get('window').width);
+import styles from '../styles/HomeScreen/home.screen.styles'
 
 const categorias = [
   {icon: 'ios-fitness', title: 'Deporte', color: '#FF7070', key: '1'},
@@ -37,15 +36,3 @@ const Home = ({ navigation }) => {
 };
 
 export default Home;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-  },
-  categoryContainer: {
-    alignItems: 'center',
-    alignSelf: 'center',
-    width: screenWidth,
-  }
-});

@@ -7,4 +7,5 @@ export { default as ViewTutorial } from './ViewTutorial'
 export { default as Login } from './Login'
 export { default as InProgress } from './InProgress'
 export { default as Profile } from './Profile'
+export { default as Likes } from './Likes'
 

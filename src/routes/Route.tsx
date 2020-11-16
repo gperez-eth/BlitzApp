@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, HeaderStyleInterpolators, CardStyleInterpolators } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { Home, Explore, ExploreCategory, Upload, UploadingTransition, ViewTutorial, Profile, InProgress } from '../Screens'
+import { Home, Explore, ExploreCategory, Upload, UploadingTransition, ViewTutorial, Profile, InProgress, Likes } from '../Screens'
 
 const HomeStack = createStackNavigator();
   
@@ -73,6 +73,21 @@ function UploadStackScreen() {
   );
 }
 
+const LikesStack = createStackNavigator();
+  
+function LikesStackScreen() {
+  return (
+    <LikesStack.Navigator headerMode={'screen'} >
+      <LikesStack.Screen name="Likes" component={Likes}
+        options={({navigation}) => ({
+          headerTitleStyle: { fontSize: 30, fontFamily: 'Bold' },
+          headerTitle: 'Likes'
+        })}
+      />
+    </LikesStack.Navigator>
+  );
+}
+
 const Tab = createBottomTabNavigator();
 
 function BottomTabNavigator() {
@@ -100,9 +115,9 @@ function BottomTabNavigator() {
           <Ionicons name={'ios-cloud-upload'} color={color} size={30} />
         ),
       }}/>
-      <Tab.Screen name="Archived" component={InProgress} options={{
+      <Tab.Screen name="Likes" component={LikesStackScreen} options={{
         tabBarIcon: ({ color, size }) => (
-          <Ionicons name={'md-bookmark'} color={color} size={30} />
+          <Ionicons name={'ios-heart'} color={color} size={30} />
         ),
       }}/>
       <Tab.Screen name="Profile " component={Profile} options={{

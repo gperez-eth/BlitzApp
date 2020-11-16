@@ -79,8 +79,7 @@ const Upload = ({ navigation }) => {
     const addStep = () => {
         if (formRef.current) {
             formRef.current.values.steps.push({description: ''})
-            /* OMGGGG FINALLY LO CONSEGUÍ!!!
-            Basicamente el problema era que al añadir un nuevo paso en el state este no se actualizaba con los valores
+            /* al añadir un nuevo paso en el state este no se actualizaba con los valores
             que cambian dentro de formik por lo que al cambiar los valores y darle a añadir un nuevo paso todos los
             campos de formik se reseteaban a cadena vacia las posibles soluciones son:
             1º Poner el boton de añadir nuevos campos dentro de formik, 

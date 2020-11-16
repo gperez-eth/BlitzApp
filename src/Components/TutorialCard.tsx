@@ -19,7 +19,7 @@ const TutorialCard = ({ navigation, list }) => {
             <View style={{flexDirection: 'row', alignItems: 'flex-end', flex: 1, }}>
               <View style={{flexDirection: 'row', alignItems: 'center',}}>
                 <Ionicons name={'ios-heart'} color={'red'} size={20} style={{marginRight: 5}}/>
-                <Text style={styles.title}>{list.likes}</Text>
+                <Text style={styles.title}>{list.likes.length}</Text>
               </View>
             </View>
           </View>

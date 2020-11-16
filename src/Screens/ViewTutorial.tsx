@@ -3,10 +3,15 @@ import { Text, View, StyleSheet, Image, Dimensions, Platform, StatusBar, ImageBa
 import { Ionicons } from '@expo/vector-icons';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated'
+import Fire from '../database/Fire'
+import firebase from 'firebase'
+import LikeButton from '../Components/LikeButton';
 
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
 
 const ViewTutorial = ({ navigation, route }) => {
+
+    const [canLike, setCanLike] = React.useState(true)
 
     const MyStatusBar = ({backgroundColor, ...props}) => (
         <View style={[styles.statusBar, { backgroundColor }]}>
@@ -25,8 +30,39 @@ const ViewTutorial = ({ navigation, route }) => {
         outputRange: [ slideHeight, slideHeight / 1.5, slideHeight / 2 ],
         extrapolate: 'clamp'
     });
+    
+    let tutorial = route.params.tutorial
 
-    const tutorial = route.params.tutorial
+    const giveLike = () => {
+        var bd = new Fire((error, user) => {
+            if (error) {
+              return alert("Oh oh, something went wrong" + error)
+            } else {
+                if(canLike) {
+                    tutorial.likes.push(firebase.auth().currentUser.uid)
+                    bd.updateTutorial(tutorial)
+                    setCanLike(false)
+                } else {
+                    var index = tutorial.likes.indexOf(firebase.auth().currentUser.uid);
+                    if (index !== -1) {
+                        tutorial.likes.splice(index, 1);
+                    }
+                    bd.updateTutorial(tutorial)
+                    setCanLike(true)
+                }
+            }
+        })
+    }
+
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', async() => {
+            if(tutorial.likes.includes(firebase.auth().currentUser.uid)) {
+                setCanLike(false)
+            }
+        })
+        return unsubscribe
+    }, [navigation])
+
   return (
     <View style={styles.content}>
         <MyStatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
@@ -35,7 +71,17 @@ const ViewTutorial = ({ navigation, route }) => {
             <View style={styles.textContainer}>
                 <Text style={styles.title}>{tutorial.title.slice(0, 50)}</Text>
                 <Text style={styles.title}><Ionicons name={'ios-stats'} color={'green'} size={20} style={{marginRight: 10}}/> {tutorial.dificulty}</Text>
-                <Text style={styles.title}><Ionicons name={'ios-heart'} color={'red'} size={20} style={{marginRight: 10}}/> {tutorial.likes}</Text>
+                <Text style={styles.title}><Ionicons name={'ios-heart'} color={'red'} size={20} style={{marginRight: 10}}/> {tutorial.likes.length}</Text>
+                <View style={styles.likeButtonContainer}>
+                    {
+                        (
+                            canLike ?
+                                <LikeButton onPress={giveLike} title={'Añadir como favorito'} icon={'ios-heart'} color={'#8DBAE7'}/>
+                            :
+                                <LikeButton onPress={giveLike} title={'Quitar como favorito'} icon={'ios-heart-dislike'} color={'#E78DA3'}/>
+                        )
+                    }
+                </View>
             </View>
         </Animated.View>
         <Animated.ScrollView scrollEventThrottle={16} showsVerticalScrollIndicator={false} bounces={false} style={styles.bottomContainer}
@@ -89,10 +135,14 @@ const styles = StyleSheet.create({
     },
     textContainer: {
         width: '100%',
-        paddingBottom: 30,
+        paddingBottom: 10,
         position: "absolute",
         borderBottomRightRadius: 100,
         borderBottomLeftRadius: 100
+    },
+    likeButtonContainer: {
+        padding: 10,
+        alignItems: 'center'
     },
     stepCard: {
         marginBottom: 20,

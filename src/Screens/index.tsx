@@ -10,4 +10,5 @@ export { default as InProgress } from './InProgress'
 export { default as Profile } from './Profile'
 export { default as Likes } from './Likes'
 export { default as OnBoarding } from './OnBoarding'
+export { default as MisTutoriales } from './MisTutoriales'
 

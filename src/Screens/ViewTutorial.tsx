@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Image, Dimensions, Platform, StatusBar, ImageBackground } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { ScrollView } from 'react-native-gesture-handler';
+import { Text, View, StyleSheet, Image, Dimensions, Platform, StatusBar, ImageBackground, Modal } from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated'
 import Fire from '../database/Fire'
 import firebase from 'firebase'
 import LikeButton from '../Components/LikeButton';
+import ActionButton from 'react-native-action-button';
+import { Modalize } from 'react-native-modalize';
 
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
 
@@ -14,12 +16,18 @@ const ViewTutorial = ({ navigation, route }) => {
     let tutorial = route.params.tutorial
 
     const [canLike, setCanLike] = React.useState(tutorial.likes.includes(firebase.auth().currentUser.uid) ? false : true)
+    const [review, setReview] = React.useState('')
+    const modalizeRef = React.useRef<Modalize>(null);
 
     const MyStatusBar = ({backgroundColor, ...props}) => (
         <View style={[styles.statusBar, { backgroundColor }]}>
           <StatusBar translucent backgroundColor={backgroundColor} {...props} />
         </View>
     );
+
+    const onOpen = () => {
+        modalizeRef.current?.open();
+    };
 
     const screenHeight = Dimensions.get('window').height;
     const slideHeight = (screenHeight / 2.5)
@@ -49,47 +57,70 @@ const ViewTutorial = ({ navigation, route }) => {
         }
     }
 
+    const giveReview = () => {
+        var bd = new Fire()
+        bd.updateReview(tutorial,
+        {
+            user: firebase.auth().currentUser.uid,
+            review: review
+        })
+        modalizeRef.current.close()
+    }
+
   return (
-    <View style={styles.content}>
-        <MyStatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-        <Animated.View style={[styles.topContainer, {height: AnimateHeaderHeight, minHeight: slideHeight / 2 }]}>
-            <ImageBackground  resizeMode="cover" source={tutorial.image[0].url && { uri: tutorial.image[0].url }} style={styles.image} blurRadius={1} imageStyle={{backgroundColor:'#D55FFF', opacity: 0.8, borderBottomRightRadius: 100, borderBottomLeftRadius: 100,}}/>
-            <View style={styles.textContainer}>
-                <Text style={styles.title}>{tutorial.title.slice(0, 50)}</Text>
-                <Text style={styles.title}><Ionicons name={'ios-stats'} color={'green'} size={20} style={{marginRight: 10}}/> {tutorial.dificulty}</Text>
-                <Text style={styles.title}><Ionicons name={'ios-heart'} color={'red'} size={20} style={{marginRight: 10}}/> {tutorial.likes.length}</Text>
-                <View style={styles.likeButtonContainer}>
-                    {
-                        (
-                            canLike ?
-                                <LikeButton onPress={giveLike} title={'Añadir como favorito'} icon={'ios-heart'} color={'#8DBAE7'}/>
-                            :
-                                <LikeButton onPress={giveLike} title={'Quitar como favorito'} icon={'ios-heart-dislike'} color={'#E78DA3'}/>
-                        )
-                    }
+    <>
+        <View style={styles.content}>
+            <MyStatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+            <Animated.View style={[styles.topContainer, {height: AnimateHeaderHeight, minHeight: slideHeight / 2 }]}>
+                <ImageBackground  resizeMode="cover" source={tutorial.image[0].url && { uri: tutorial.image[0].url }} style={styles.image} blurRadius={1} imageStyle={{backgroundColor:'#D55FFF', opacity: 0.8, borderBottomRightRadius: 100, borderBottomLeftRadius: 100,}}/>
+                <View style={styles.textContainer}>
+                    <Text style={styles.title}>{tutorial.title.slice(0, 50)}</Text>
+                    <Text style={styles.title}><Ionicons name={'ios-stats'} color={'green'} size={20} style={{marginRight: 10}}/> {tutorial.dificulty}</Text>
+                    <Text style={styles.title}><Ionicons name={'ios-heart'} color={'red'} size={20} style={{marginRight: 10}}/> {tutorial.likes.length}</Text>
+                    <View style={styles.likeButtonContainer}>
+                        {
+                            (
+                                canLike ?
+                                    <LikeButton onPress={giveLike} title={'Añadir como favorito'} icon={'ios-heart'} color={'#8DBAE7'}/>
+                                :
+                                    <LikeButton onPress={giveLike} title={'Quitar como favorito'} icon={'ios-heart-dislike'} color={'#E78DA3'}/>
+                            )
+                        }
+                    </View>
+                </View>
+            </Animated.View>
+            <Animated.ScrollView scrollEventThrottle={16} showsVerticalScrollIndicator={false} bounces={false} style={styles.bottomContainer}
+                onScroll={Animated.event([{
+                    nativeEvent: { contentOffset: { y: scrollY }}
+                }])}
+            >
+                {tutorial.steps.map((item, index) => {
+                    return (
+                        <View style={styles.stepCard}>
+                            <View style={{height: 150}}>
+                                <Image resizeMode="cover" source={tutorial.image[index].url && { uri: tutorial.image[index].url }} style={{width: '100%', height: '100%', borderRadius: 20}}/>
+                            </View>
+                            <Text style={styles.numeroPaso}>Paso: {index + 1}</Text>
+                            <View style={{padding: 20}}>
+                                <Text style={styles.description}>{item.description}</Text>
+                            </View>
+                        </View>
+                    )
+                })}
+            </Animated.ScrollView>
+            <ActionButton buttonColor={'black'} onPress={onOpen} renderIcon={() => <MaterialIcons name={'edit'} color={'white'} size={25}/>}/>  
+        </View>
+        <Modalize ref={modalizeRef} adjustToContentHeight >
+            <View style={styles.modalContainer}>
+                <TextInput placeholder="Cuentanos que te ha parecido..." style={styles.input} multiline value={review} placeholderTextColor={"black"} onChangeText={review => setReview(review)} />
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity activeOpacity={0.9} style={styles.button} onPress={giveReview} >
+                        <Text style={styles.buttonText}>Escribir Review</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
-        </Animated.View>
-        <Animated.ScrollView scrollEventThrottle={16} showsVerticalScrollIndicator={false} bounces={false} style={styles.bottomContainer}
-            onScroll={Animated.event([{
-                nativeEvent: { contentOffset: { y: scrollY }}
-            }])}
-        >
-            {tutorial.steps.map((item, index) => {
-                return (
-                    <View style={styles.stepCard}>
-                        <View style={{height: 150}}>
-                            <Image resizeMode="cover" source={tutorial.image[index].url && { uri: tutorial.image[index].url }} style={{width: '100%', height: '100%', borderRadius: 20}}/>
-                        </View>
-                        <Text style={styles.numeroPaso}>Paso: {index + 1}</Text>
-                        <View style={{padding: 20}}>
-                            <Text style={styles.description}>{item.description}</Text>
-                        </View>
-                    </View>
-                )
-            })}
-        </Animated.ScrollView>
-    </View>
+        </Modalize>
+    </>
   );
 };
 
@@ -147,4 +178,35 @@ const styles = StyleSheet.create({
     statusBar: {
         height: STATUSBAR_HEIGHT,
     },
+    buttonContainer: {
+        paddingHorizontal: 40,
+        paddingTop: 20
+    },
+    buttonText:{
+        textAlign: 'center',
+        color: 'white',
+        fontFamily: 'Bold',
+        fontSize: 20,
+    },
+    button:{
+        padding: 15,
+        backgroundColor: 'black',
+        borderRadius: 50,
+        justifyContent: 'center'
+    },
+    input: {
+        color: 'black',
+        minHeight: 50,
+        borderColor: 'black',
+        borderWidth: 1.5,
+        borderRadius: 5,
+        paddingLeft: 10,
+        fontSize: 15,
+        padding: 10
+    },
+    modalContainer: {
+        justifyContent: 'center',
+        paddingVertical: 20,
+        paddingHorizontal: 20,
+    }
 });

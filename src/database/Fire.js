@@ -106,6 +106,8 @@ class Fire {
     addTutorial(tutorial, images, callback) {
 
         tutorial.likes = []
+        tutorial.reviews = []
+        tutorial.createdBy = firebase.auth().currentUser.uid
 
         let id = ''
         let ref = this.tutorialesRef
@@ -167,6 +169,13 @@ class Fire {
         ref.doc(tutorial.id).update(tutorial)
     }
 
+    updateReview(tutorial, newReview) {
+        tutorial.reviews = tutorial.reviews.filter(tut => tut.user !== firebase.auth().currentUser.uid)
+        tutorial.reviews.push(newReview)
+        let ref = this.tutorialesRef
+        ref.doc(tutorial.id).update(tutorial)
+    }
+
     async updateProfile(nombre, apellidos, username, biography, avatar) {
 
         let id = firebase.auth().currentUser.uid
@@ -213,6 +222,45 @@ class Fire {
                 });
             })
         })
+    }
+
+    getUser(callback) {
+        let ref = this.userRef
+        let id = firebase.auth().currentUser.uid
+        ref.where("uid", "==", id)
+        .get()
+        .then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                callback(doc.data())
+            });
+        })
+        .catch(function(error) {
+            console.log("Error getting documents: ", error);
+        });
+    }
+
+    getMyTutoriales(callback) {
+        let ref = this.tutorialesRef
+        let tutoriales = []
+
+        ref.where("createdBy", "==", firebase.auth().currentUser.uid)
+        .get()
+        .then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                tutoriales.push({ 'id': doc.id, ...doc.data() })
+            });
+
+            tutoriales.forEach(tut => {
+                tut.image.sort(function(a, b) {
+                    return a.number - b.number;
+                });
+            })
+
+            callback(tutoriales)
+        })
+        .catch(function(error) {
+            console.log("Error getting documents: ", error);
+        });
     }
 
     detach() {

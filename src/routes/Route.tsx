@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, HeaderStyleInterpolators, CardStyleInterpolators } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { Home, Explore, ExploreCategory, Upload, UploadingTransition, ViewTutorial, Profile, OnBoarding, Likes } from '../Screens'
+import { Home, Explore, ExploreCategory, Upload, UploadingTransition, ViewTutorial, Profile, OnBoarding, Likes, MisTutoriales } from '../Screens'
 
 const HomeStack = createStackNavigator();
   
@@ -97,7 +97,12 @@ function ProfileStackScreen() {
       <ProfileStack.Screen name="Perfil" component={Profile}
         options={({navigation}) => ({
           headerTitleStyle: { fontSize: 30, fontFamily: 'Bold' },
-          headerShown: false
+        })}
+      />
+      <ProfileStack.Screen name="MisTutoriales" component={MisTutoriales}
+        options={({navigation}) => ({
+          headerTitleStyle: { fontSize: 30, fontFamily: 'Bold' },
+          headerTitle: 'Mis tutoriales'
         })}
       />
     </ProfileStack.Navigator>

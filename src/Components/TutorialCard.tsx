@@ -6,9 +6,9 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const TutorialCard = ({ navigation, list }) => {
+const TutorialCard = ({ navigation, list, isMisTutoriales}) => {
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.8} onPress={() => navigation.navigate('ViewTutorial', {tutorial: list})}>
+    <TouchableOpacity style={styles.container} activeOpacity={0.8} onPress={() => isMisTutoriales ? navigation.navigate('Explore', {screen: 'ViewTutorial', params: {tutorial: list}}) : navigation.navigate('ViewTutorial', {tutorial: list})}>
         <View style={styles.cardImage}>
           <Image resizeMode="cover" source={list.image[0].url && { uri: list.image[0].url }} style={styles.image}/>
         </View>
@@ -17,9 +17,12 @@ const TutorialCard = ({ navigation, list }) => {
             <Text style={styles.title}>{list.title}</Text>
             <Text style={styles.title}><Ionicons name={'ios-stats'} color={'green'} size={20} style={{marginRight: 10}}/> {list.dificulty}</Text>
             <View style={{flexDirection: 'row', alignItems: 'flex-end', flex: 1, }}>
-              <View style={{flexDirection: 'row', alignItems: 'center',}}>
-                <Ionicons name={'ios-heart'} color={'red'} size={20} style={{marginRight: 5}}/>
-                <Text style={styles.title}>{list.likes.length}</Text>
+              <View>
+                <Text style={styles.title}><Ionicons name={'ios-star'} color={'orange'} size={20} style={{marginRight: 10}}/> {list.averageRating}</Text>
+                <View style={{flexDirection: 'row', alignItems: 'center',}}>
+                  <Ionicons name={'ios-heart'} color={'red'} size={20} style={{marginRight: 5}}/>
+                  <Text style={styles.title}>{list.likes.length}</Text>
+                </View>
               </View>
             </View>
           </View>

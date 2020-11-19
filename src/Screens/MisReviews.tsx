@@ -1,24 +1,23 @@
-import React, {useState, useEffect, Component} from 'react';
-import { Text, View, StyleSheet, Dimensions, RefreshControl, ImageBackground, Image } from 'react-native';
-import { ScrollView, TouchableOpacity, FlatList } from 'react-native-gesture-handler';
-import { Slide, CategorySlider, TutorialCard } from '../Components'
+import React, {useState, useEffect } from 'react';
+import { View, StyleSheet, Image, Text } from 'react-native';
+import { ReviewCard } from '../Components'
 import Fire from '../database/Fire'
 import firebase from 'firebase'
 
-const MisTutoriales = ({navigation}) => {
+const MisReviews = ({navigation}) => {
 
     const [tutoriales, setTutoriales] = useState([])
 
     const renderTutoriales = (navigation, tutoriales) => {
         if(tutoriales) {
-            return <TutorialCard navigation={navigation} list={tutoriales} isMisTutoriales={true}/>
+            return <ReviewCard navigation={navigation} list={tutoriales} />
         }
     }
     
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', async() => {
             var bd = new Fire()
-            bd.getMyTutoriales(data => {
+            bd.getReviews(data => {
                 setTutoriales(data)
             })
         });
@@ -36,9 +35,9 @@ const MisTutoriales = ({navigation}) => {
                     )
                   })
                 :
-                <View style={styles.writingContainer}>
-                  <Image source={require('../assets/Writing.png')} style={styles.writingImage} resizeMode={"contain"}/>
-                  <Text style={styles.writingTitle}>No tienes tutoriales escritos. ¡Animate a escribir el primero!</Text>
+                <View style={styles.inspireContainer}>
+                  <Image source={require('../assets/Inspire.png')} style={styles.inspireImage} resizeMode={"contain"}/>
+                  <Text style={styles.inspireTitle}>No has escrito ninguna review. ¡Ayuda a los demas dejando consejos!</Text>
                 </View>
                 )
             }
@@ -46,21 +45,20 @@ const MisTutoriales = ({navigation}) => {
     )
 }
 
-export default MisTutoriales
+export default MisReviews
 
 const styles = StyleSheet.create({
-
     container:{
         flex: 1,
         padding: 15
     },
-    writingContainer: {
+    inspireContainer: {
         alignItems: 'center',
     },
-    writingImage: {
+    inspireImage: {
         height: 300,
     },
-    writingTitle: {
+    inspireTitle: {
         fontFamily: 'Semibold',
         textAlign: 'center',
         fontSize: 22,

@@ -11,19 +11,25 @@ const Register = ({ navigation }) => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
 
     const onBoarding = () => {
-        AsyncStorage.setItem('NEWACCOUNT', 'true')
-        firebase.auth().createUserWithEmailAndPassword(email, password).then()
-        .catch(error => {
-            var errorCode = error.code;
-            if (errorCode == 'auth/weak-password') {
-                Alert.alert('Error durante el registro', 'La contraseña es muy debil.');
-            } else if (errorCode == 'auth/invalid-email') {
-                Alert.alert('Error durante el registro', 'El email no tiene un formato correcto');
-            }
-            console.log(error);
-        })
+        if(password == confirmPassword) {
+            firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
+                AsyncStorage.setItem('NEWACCOUNT', 'true')
+            })
+            .catch(error => {
+                var errorCode = error.code;
+                if (errorCode == 'auth/weak-password') {
+                    Alert.alert('Error durante el registro', 'La contraseña es muy debil.');
+                } else if (errorCode == 'auth/invalid-email') {
+                    Alert.alert('Error durante el registro', 'El email no tiene un formato correcto');
+                }
+                console.log(error);
+            })
+        } else {
+            Alert.alert('Error al confirmar la contraseña', 'Asegurese de escribir la misma contraseña')
+        }
     }
 
     return (
@@ -50,7 +56,7 @@ const Register = ({ navigation }) => {
                 </View>
                 <View style={styles.mailContainer}>
                     <Ionicons style={{paddingRight: 15}} name={'ios-lock'} color={'#2450E7'} size={30} />
-                    <TextInput placeholder="Confirmar contraseña" style={styles.input} secureTextEntry value={password} placeholderTextColor={"#2450E7"} onChangeText={password => setPassword(password)} />
+                    <TextInput placeholder="Confirmar contraseña" style={styles.input} secureTextEntry value={confirmPassword} placeholderTextColor={"#2450E7"} onChangeText={confirmPassword => setConfirmPassword(confirmPassword)} />
                 </View>
             </View>
 

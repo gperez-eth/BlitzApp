@@ -27,20 +27,38 @@ class Fire {
     }
 
     getFeatured(callback) {
-        let ref = this.tutorialesRef.where("likes", ">=", 15)
+        let ref = this.tutorialesRef.where("totalLikesCount", ">=", 15)
         this.unsubscribe = ref.onSnapshot(snapshot => {
-            tutoriales = []
+            let tutoriales = []
 
             snapshot.forEach(doc  => {
                 tutoriales.push({ 'id': doc.id, ...doc.data() })
             })
 
+            callback(tutoriales)
+        })
+    }
+
+    getReviews(callback) {
+        let ref = this.tutorialesRef
+        this.unsubscribe = ref.onSnapshot(snapshot => {
+            let tutoriales = []
+
+            snapshot.forEach(doc  => {
+                if (doc.data().image) {
+                    doc.data().reviews.forEach(rev => {
+                        if(rev.user == firebase.auth().currentUser.uid) {
+                            tutoriales.push({ 'id': doc.id, ...doc.data() })
+                        }
+                    })
+                }
+            })
+            
             tutoriales.forEach(tut => {
                 tut.image.sort(function(a, b) {
                     return a.number - b.number;
                 });
             })
-
             callback(tutoriales)
         })
     }
@@ -48,7 +66,7 @@ class Fire {
     getTutoriales(callback) {
         let ref = this.tutorialesRef.limit(15)
         this.unsubscribe = ref.onSnapshot(snapshot => {
-            tutoriales = []
+            let tutoriales = []
 
             snapshot.forEach(doc  => {
                 if (doc.data().image) {
@@ -68,7 +86,7 @@ class Fire {
     getCategoryTutorial(category, callback) {
         let ref = this.tutorialesRef.where("category", "==", category)
         this.unsubscribe = ref.onSnapshot(snapshot => {
-            tutoriales = []
+            let tutoriales = []
 
             snapshot.forEach(doc  => {
                 tutoriales.push({ 'id': doc.id, ...doc.data() })
@@ -86,7 +104,7 @@ class Fire {
     getLikedTutoriales(callback) {
         let ref = this.tutorialesRef
         this.unsubscribe = ref.onSnapshot(snapshot => {
-            tutoriales = []
+            let tutoriales = []
 
             snapshot.forEach(doc  => {
                 if (doc.data().likes.includes(firebase.auth().currentUser.uid)) {
@@ -105,8 +123,10 @@ class Fire {
 
     addTutorial(tutorial, images, callback) {
 
+        tutorial.totalLikesCount = 0
         tutorial.likes = []
         tutorial.reviews = []
+        tutorial.averageRating = 0
         tutorial.createdBy = firebase.auth().currentUser.uid
 
         let id = ''
@@ -165,6 +185,7 @@ class Fire {
     }
 
     updateTutorial(tutorial) {
+        console.log(tutorial)
         let ref = this.tutorialesRef
         ref.doc(tutorial.id).update(tutorial)
     }
@@ -172,6 +193,11 @@ class Fire {
     updateReview(tutorial, newReview) {
         tutorial.reviews = tutorial.reviews.filter(tut => tut.user !== firebase.auth().currentUser.uid)
         tutorial.reviews.push(newReview)
+        tutorial.averageRating = 0
+        tutorial.reviews.forEach(rev => {
+            tutorial.averageRating += rev.rating
+        })
+        tutorial.averageRating = tutorial.averageRating / tutorial.reviews.length
         let ref = this.tutorialesRef
         ref.doc(tutorial.id).update(tutorial)
     }
@@ -255,7 +281,7 @@ class Fire {
                     return a.number - b.number;
                 });
             })
-
+        
             callback(tutoriales)
         })
         .catch(function(error) {

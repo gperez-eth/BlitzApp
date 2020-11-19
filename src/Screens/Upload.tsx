@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, TextInput, Image } from 'react-native';
+import { Text, View, StyleSheet, TextInput, Image, Alert } from 'react-native';
 import { Formik } from 'formik'
 import * as ImagePicker from 'expo-image-picker'
 import { TouchableOpacity, FlatList, ScrollView } from 'react-native-gesture-handler';
@@ -8,8 +8,25 @@ import ActionButton from 'react-native-action-button';
 import { PublishButton } from '../Components'
 import Fire from '../database/Fire'
 import DropDownPicker from 'react-native-dropdown-picker';
+import * as yup from 'yup'
+
+const ReviewSchema = yup.object({
+    title: yup.string().required('Este campo es obligatorio').min(10, 'El titulo debe de tener al menos 10 caracteres'),
+    dificulty: yup.string().required('Este campo es obligatorio').test('is-num-1-9', 'La dificultad debe de ser un número entre el 1 y el 9', (val => {
+        return parseInt(val) < 10 && parseInt(val) > 0
+    })),
+    steps: yup.array().of(
+        yup.object().shape({
+            description: yup.string().required('Este campo es obligatorio').min(10, 'Es obligatorio introducir una descripción de al menos 10 caracteres')
+        })
+    )
+})
 
 const Upload = ({ navigation }) => {
+
+    const [nImages, setNImages] = React.useState([
+        {image: false, uri: '', key: '1'},
+    ]);
 
     const [activeColor, setActiveColor] = React.useState(
         {primary: '#55CA4B', secondary: '#92E18B'},
@@ -56,11 +73,16 @@ const Upload = ({ navigation }) => {
     }
     
     const addTutorial = (values) => {
-        var bd = new Fire()
-        bd.addTutorial(values, nImages, status => {
-            navigation.navigate('UploadingTransition', {status: status})
-        })
-        clearFields()
+        const allHaveImages = (obj) => obj.image == true;
+        if(nImages.every(allHaveImages)) {
+            var bd = new Fire()
+            bd.addTutorial(values, nImages, status => {
+                navigation.navigate('UploadingTransition', {status: status})
+            })
+            clearFields()
+        } else {
+            Alert.alert('Error en la selección de imágenes', 'Ha ocurrido un error en la selección de imagenes por favor asegurese de que todos los pasos tienen una imagen')
+        }
     }
 
     const clearFields = () => {
@@ -82,10 +104,6 @@ const Upload = ({ navigation }) => {
             */
         }
     }
-
-    const [nImages, setNImages] = React.useState([
-        {image: false, uri: '', key: '1'},
-    ]);
 
     let openImagePickerAsync = async (key) => {
         let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
@@ -111,13 +129,13 @@ const Upload = ({ navigation }) => {
         <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.formContainer}>
             <Formik
+                validationSchema={ReviewSchema}
                 innerRef={formRef}
                 initialValues={{title: '', category: 'Música', dificulty: '', steps: [{description: ''},]}}
                 onSubmit={(values) => {
-                    console.log(values)
                     addTutorial(values)
                 }}>
-                    {({ handleChange, handleSubmit, values }) => (
+                    {({ handleChange, handleSubmit, values, errors, handleBlur, touched }) => (
                         <View>
                             <View style={styles.inputFrame}>
                                 <Text style={[styles.fields, {color: activeColor.primary}]}>Titulo*</Text>
@@ -126,7 +144,9 @@ const Upload = ({ navigation }) => {
                                     onChangeText={handleChange('title')}
                                     placeholder='Construir...'
                                     value={values.title}
+                                    onBlur={handleBlur('title')}
                                 />
+                                <Text style={styles.errorText}>{touched.title && errors.title}</Text>
                             </View>
 
                             <View style={styles.inputFrame}>
@@ -164,7 +184,9 @@ const Upload = ({ navigation }) => {
                                     placeholder='5'
                                     keyboardType='numeric'
                                     value={values.dificulty}
+                                    onBlur={handleBlur('dificulty')}
                                 />
+                                <Text style={styles.errorText}>{touched.dificulty && errors.dificulty}</Text>
                             </View>
 
                             {values.steps.map((item, index) => {
@@ -178,6 +200,9 @@ const Upload = ({ navigation }) => {
                                             placeholder='bla bla bla...'
                                             value={values.steps[index].description}
                                         />
+                                        {errors.steps && errors.steps[index] && Object.values(errors.steps[index]).map((err, j) => (
+                                            <Text style={styles.errorText} key={j + index}>{err}</Text>
+                                        ))}
                                     </View>
                                 )
                             })}
@@ -254,4 +279,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
+    errorText: {
+        fontFamily: 'Semibold',
+        color: 'red'
+    }
 });

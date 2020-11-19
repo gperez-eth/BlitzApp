@@ -67,7 +67,7 @@ const Profile = ({ navigation }) => {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.buttonContainer}>
-                            <TouchableOpacity activeOpacity={0.9} style={styles.buttonTutorial} onPress={closeSession} >
+                            <TouchableOpacity activeOpacity={0.9} style={styles.buttonTutorial} onPress={() => navigation.navigate('MisReviews')} >
                                 <MaterialIcons name="rate-review" size={30} color="white" />
                                 <Text style={styles.buttonTextTutorial}>Reviews</Text>
                             </TouchableOpacity>

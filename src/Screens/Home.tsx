@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import { ActivityIndicator, AsyncStorage, View } from 'react-native';
+import { ActivityIndicator, AsyncStorage, View, Text } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { Categoria } from '../Components'
-import { Dimensions } from "react-native";
 import styles from '../styles/HomeScreen/home.screen.styles'
 
 const categorias = [

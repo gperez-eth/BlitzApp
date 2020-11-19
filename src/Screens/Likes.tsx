@@ -1,5 +1,5 @@
 import React, {useState, useEffect, Component} from 'react';
-import { Text, View, StyleSheet, Dimensions, RefreshControl, ImageBackground } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, RefreshControl, ImageBackground, Image } from 'react-native';
 import { ScrollView, TouchableOpacity, FlatList } from 'react-native-gesture-handler';
 import { Slide, CategorySlider, TutorialCard } from '../Components'
 import Fire from '../database/Fire'
@@ -32,19 +32,28 @@ export default class Explore extends Component {
 
       renderTutoriales = (navigation, tutoriales) => {
         if(tutoriales) {
-          return <TutorialCard navigation={navigation} list={tutoriales} />
+          return <TutorialCard navigation={navigation} list={tutoriales} isMisTutoriales={false}/>
         }
       }
 
     render() {
         const { navigation } = this.props
         return (
-            <View style={styles.container}>
-                {this.state.likedTutorial.map((item) => {
+            <View style={[styles.container, {justifyContent: this.state.likedTutorial.length > 0 ? 'flex-start' : 'center'}]}>
+              {
+                (this.state.likedTutorial.length > 0 ? 
+                  this.state.likedTutorial.map((item) => {
                     return (
                         this.renderTutoriales(navigation, item)
                     )
-                })}
+                  })
+                :
+                <View style={styles.likeContainer}>
+                  <Image source={require('../assets/Like.png')} style={styles.likeImage} resizeMode={"contain"}/>
+                  <Text style={styles.likeTitle}>Aún no le diste like a ningún tutorial, vuelve mas tarde</Text>
+                </View>
+                )
+              }
             </View>
         )
     }
@@ -54,6 +63,18 @@ const styles = StyleSheet.create({
 
     container:{
         flex: 1,
-        padding: 15
+        padding: 15,
+    },
+    likeContainer: {
+      alignItems: 'center',
+    },
+    likeImage: {
+      height: 300,
+    },
+    likeTitle: {
+      fontFamily: 'Semibold',
+      textAlign: 'center',
+      fontSize: 22,
+      padding: 10
     }
 })

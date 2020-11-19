@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Image, Dimensions, Platform, StatusBar, ImageBackground, Modal } from 'react-native';
+import { Text, View, StyleSheet, Image, Dimensions, Platform, StatusBar, ImageBackground, Modal, Alert } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { ScrollView, TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated'
@@ -8,6 +8,7 @@ import firebase from 'firebase'
 import LikeButton from '../Components/LikeButton';
 import ActionButton from 'react-native-action-button';
 import { Modalize } from 'react-native-modalize';
+import { Rating, AirbnbRating } from 'react-native-ratings';
 
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
 
@@ -17,13 +18,8 @@ const ViewTutorial = ({ navigation, route }) => {
 
     const [canLike, setCanLike] = React.useState(tutorial.likes.includes(firebase.auth().currentUser.uid) ? false : true)
     const [review, setReview] = React.useState('')
+    const [rating, setRating] = React.useState(4)
     const modalizeRef = React.useRef<Modalize>(null);
-
-    const MyStatusBar = ({backgroundColor, ...props}) => (
-        <View style={[styles.statusBar, { backgroundColor }]}>
-          <StatusBar translucent backgroundColor={backgroundColor} {...props} />
-        </View>
-    );
 
     const onOpen = () => {
         modalizeRef.current?.open();
@@ -37,7 +33,7 @@ const ViewTutorial = ({ navigation, route }) => {
     const AnimateHeaderHeight = scrollY.interpolate(
     {
         inputRange: [ 0, 250, 450 ],
-        outputRange: [ slideHeight, slideHeight / 1.2, slideHeight / 1.6 ],
+        outputRange: [ slideHeight, slideHeight / 1.2, slideHeight / 1.4 ],
         extrapolate: 'clamp'
     });
 
@@ -45,6 +41,7 @@ const ViewTutorial = ({ navigation, route }) => {
         var bd = new Fire()
         if(canLike) {
             tutorial.likes.push(firebase.auth().currentUser.uid)
+            tutorial.totalLikesCount = tutorial.totalLikesCount + 1
             bd.updateTutorial(tutorial)
             setCanLike(false)
         } else {
@@ -52,6 +49,7 @@ const ViewTutorial = ({ navigation, route }) => {
             if (index !== -1) {
                 tutorial.likes.splice(index, 1);
             }
+            tutorial.totalLikesCount = tutorial.totalLikesCount - 1
             bd.updateTutorial(tutorial)
             setCanLike(true)
         }
@@ -59,18 +57,22 @@ const ViewTutorial = ({ navigation, route }) => {
 
     const giveReview = () => {
         var bd = new Fire()
-        bd.updateReview(tutorial,
-        {
-            user: firebase.auth().currentUser.uid,
-            review: review
-        })
+        if(review === '') {
+            Alert.alert('Error al escribir la review', 'Tienes que escribir que te ha parecido la review')
+        } else {
+            bd.updateReview(tutorial,
+            {
+                user: firebase.auth().currentUser.uid,
+                review: review,
+                rating: rating
+            })
+        }
         modalizeRef.current.close()
     }
 
   return (
     <>
         <View style={styles.content}>
-            <MyStatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
             <Animated.View style={[styles.topContainer, {height: AnimateHeaderHeight, minHeight: slideHeight / 2 }]}>
                 <ImageBackground  resizeMode="cover" source={tutorial.image[0].url && { uri: tutorial.image[0].url }} style={styles.image} blurRadius={1} imageStyle={{backgroundColor:'#D55FFF', opacity: 0.8, borderBottomRightRadius: 100, borderBottomLeftRadius: 100,}}/>
                 <View style={styles.textContainer}>
@@ -112,6 +114,13 @@ const ViewTutorial = ({ navigation, route }) => {
         </View>
         <Modalize ref={modalizeRef} adjustToContentHeight >
             <View style={styles.modalContainer}>
+                <AirbnbRating
+                    count={7}
+                    reviews={["Terrible", "Malo", "Meh", "Ok", "Bueno", "Muy Bueno", "Perfecto"]}
+                    defaultRating={4}
+                    size={30}
+                    onFinishRating={(rating) => setRating(rating)}
+                />
                 <TextInput placeholder="Cuentanos que te ha parecido..." style={styles.input} multiline value={review} placeholderTextColor={"black"} onChangeText={review => setReview(review)} />
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity activeOpacity={0.9} style={styles.button} onPress={giveReview} >
@@ -202,11 +211,12 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingLeft: 10,
         fontSize: 15,
-        padding: 10
+        padding: 10,
+        marginTop: 15
     },
     modalContainer: {
         justifyContent: 'center',
-        paddingVertical: 20,
+        paddingBottom: 20,
         paddingHorizontal: 20,
     }
 });

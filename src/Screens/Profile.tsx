@@ -6,14 +6,22 @@ import firebase from 'firebase'
 import Fire from '../database/Fire'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Modalize } from 'react-native-modalize';
+import EditProfile from './EditProfile';
 
 const screenWidth = Dimensions.get('window').width;
 
 const Profile = ({ navigation }) => {
 
+    const modalizeRef = React.useRef<Modalize>(null);
+
+    const onOpen = () => {
+        modalizeRef.current?.open();
+    };
+
     const [loading, setLoading] = useState(true);
-    const [nombre, setNombre] = useState(firebase.auth().currentUser.displayName)
-    const [avatar, setAvatar] = useState(firebase.auth().currentUser.photoURL)
+    const [nombre, setNombre] = useState('')
+    const [avatar, setAvatar] = useState('')
     const [apellidos, setApellidos] = useState('')
     const [username, setUsername] = useState('')
     const [biography, setBiography] = useState('')
@@ -23,19 +31,25 @@ const Profile = ({ navigation }) => {
         firebase.auth().signOut()
     }
 
+    const getUserData = async() => {
+        setLoading(false)
+        var bd = new Fire()
+        bd.getUser(userData => {
+            setNombre(userData.name)
+            setAvatar(firebase.auth().currentUser.photoURL)
+            setApellidos(userData.lastName)
+            setUsername(userData.username)
+            setBiography(userData.biography)
+        })
+    }
+
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', async() => {
             let isNewAccount = await AsyncStorage.getItem('NEWACCOUNT')
             if(isNewAccount !== null) {
                 navigation.navigate('Onboarding')
             } else {
-                setLoading(false)
-                var bd = new Fire()
-                bd.getUser(userData => {
-                    setApellidos(userData.lastName)
-                    setUsername(userData.username)
-                    setBiography(userData.biography)
-                })
+                getUserData()
             }
         });
     
@@ -48,37 +62,44 @@ const Profile = ({ navigation }) => {
                 (loading) ? 
                     <ActivityIndicator />
                 :
-                <View style={styles.container}>
-                    <View style={styles.topContainer}>
-                        <View style={styles.avatarContainer}>
-                            <Image source={{uri: avatar}} style={styles.images}/>
-                            <Text style={styles.name}>{nombre} {apellidos}</Text>
-                            <Text style={styles.username}>@{username}</Text>
-                            <View style={styles.biographyContainer}>
-                                <Text style={styles.biography}>- {biography}</Text>
+                <>
+                    <View style={styles.container}>
+                        <View style={styles.topContainer}>
+                            <View style={styles.avatarContainer}>
+                                <TouchableOpacity activeOpacity={0.8} onPress={onOpen}>
+                                    <Image source={avatar && {uri: avatar}} key={avatar} style={styles.images}/>
+                                </TouchableOpacity>
+                                <Text style={styles.name}>{nombre} {apellidos}</Text>
+                                <Text style={styles.username}>@{username}</Text>
+                                <View style={styles.biographyContainer}>
+                                    <Text style={styles.biography}>- {biography}</Text>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={styles.bottomContainer}>
+                            <View style={styles.buttonContainer}>
+                                <TouchableOpacity activeOpacity={0.9} style={styles.buttonTutorial} onPress={() => navigation.navigate('MisTutoriales')} >
+                                    <Ionicons name={'ios-book'} color={'white'} size={30} />
+                                    <Text style={styles.buttonTextTutorial}>Tutoriales</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.buttonContainer}>
+                                <TouchableOpacity activeOpacity={0.9} style={styles.buttonTutorial} onPress={() => navigation.navigate('MisReviews')} >
+                                    <MaterialIcons name="rate-review" size={30} color="white" />
+                                    <Text style={styles.buttonTextTutorial}>Reviews</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.buttonContainer}>
+                                <TouchableOpacity activeOpacity={0.9} style={styles.button} onPress={closeSession} >
+                                    <Text style={styles.buttonText}>Cerrar Sesión</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </View>
-                    <View style={styles.bottomContainer}>
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity activeOpacity={0.9} style={styles.buttonTutorial} onPress={() => navigation.navigate('MisTutoriales')} >
-                                <Ionicons name={'ios-book'} color={'white'} size={30} />
-                                <Text style={styles.buttonTextTutorial}>Tutoriales</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity activeOpacity={0.9} style={styles.buttonTutorial} onPress={() => navigation.navigate('MisReviews')} >
-                                <MaterialIcons name="rate-review" size={30} color="white" />
-                                <Text style={styles.buttonTextTutorial}>Reviews</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity activeOpacity={0.9} style={styles.button} onPress={closeSession} >
-                                <Text style={styles.buttonText}>Cerrar Sesión</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>        
+                    <Modalize ref={modalizeRef}>
+                        <EditProfile modalizeRef={modalizeRef} nombreEdit={nombre} apellidosEdit={apellidos} usernameEdit={username} biographyEdit={biography} avatarEdit={avatar} updateUserData={getUserData}/>
+                    </Modalize>
+                </>
             }
         </>
     )

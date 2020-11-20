@@ -12,4 +12,5 @@ export { default as Likes } from './Likes'
 export { default as OnBoarding } from './OnBoarding'
 export { default as MisTutoriales } from './MisTutoriales'
 export { default as MisReviews } from './MisReviews'
+export { default as EditProfile } from './EditProfile'
 

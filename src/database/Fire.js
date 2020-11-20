@@ -1,6 +1,7 @@
  import firebase from 'firebase'
  import "@firebase/firestore"
  import { v4 as uuidv4 } from 'uuid';
+import { Alert } from 'react-native';
 
  const firebaseConfig = {
     apiKey: "AIzaSyAbjZ3J6HBB6UPW1013YwOU8wpsjONJ9wQ",
@@ -24,6 +25,19 @@ class Fire {
 
     get userRef() {
         return firebase.firestore().collection('users')
+    }
+
+    restorePassword(email) {
+        firebase.auth().sendPasswordResetEmail(email).then(function() {
+            Alert.alert('Email enviado', 'El correo para restablecer la contraseña ha sido enviado')
+          }).catch(function(error) {
+            var errorCode = error.code;
+            if (errorCode == 'auth/user-not-found') {
+                Alert.alert('Error al restablecer la contraseña', 'El correo introducido no esta registrado en nuestro sistema')
+            } else if (errorCode == 'auth/invalid-email') {
+                Alert.alert('Error al restablecer la contraseña', 'El email no tiene un formato correcto');
+            }
+        });
     }
 
     getFeatured(callback) {
@@ -197,7 +211,7 @@ class Fire {
         tutorial.reviews.forEach(rev => {
             tutorial.averageRating += rev.rating
         })
-        tutorial.averageRating = tutorial.averageRating / tutorial.reviews.length
+        tutorial.averageRating = Math.round((tutorial.averageRating / tutorial.reviews.length) * 10) / 10
         let ref = this.tutorialesRef
         ref.doc(tutorial.id).update(tutorial)
     }

@@ -24,6 +24,8 @@ const Register = ({ navigation }) => {
                     Alert.alert('Error durante el registro', 'La contraseña es muy debil.');
                 } else if (errorCode == 'auth/invalid-email') {
                     Alert.alert('Error durante el registro', 'El email no tiene un formato correcto');
+                } else if (errorCode == 'auth/email-already-in-use') {
+                    Alert.alert('Error durante el registro', 'El email introducido ya esta en uso');
                 }
                 console.log(error);
             })

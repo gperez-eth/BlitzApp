@@ -1,9 +1,8 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, HeaderStyleInterpolators, CardStyleInterpolators } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-import { Home, Explore, ExploreCategory, Upload, UploadingTransition, ViewTutorial, Profile, OnBoarding, Likes, MisTutoriales, MisReviews } from '../Screens'
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Home, Explore, ExploreCategory, Upload, UploadingTransition, ViewTutorial, Profile, OnBoarding, Likes, MisTutoriales, MisReviews, EditProfile } from '../Screens'
 
 const HomeStack = createStackNavigator();
   
@@ -96,7 +95,7 @@ function ProfileStackScreen() {
     <ProfileStack.Navigator headerMode={'screen'}>
       <ProfileStack.Screen name="Perfil" component={Profile}
         options={({navigation}) => ({
-          headerTitleStyle: { fontSize: 30, fontFamily: 'Bold' },
+          headerTitleStyle: { fontSize: 30, fontFamily: 'Bold' }
         })}
       />
       <ProfileStack.Screen name="MisTutoriales" component={MisTutoriales}

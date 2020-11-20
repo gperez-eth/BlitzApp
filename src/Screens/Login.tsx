@@ -1,41 +1,41 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
 import { Text, View, StyleSheet, TextInput, Alert, Dimensions} from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import firebase from 'firebase'
 import { Path, Svg } from 'react-native-svg';
+import Fire from '../database/Fire'
 import { Ionicons } from '@expo/vector-icons';
+import { Modalize } from 'react-native-modalize';
 
 const screenHeight = Dimensions.get('window').height;
-const screenWidth = Dimensions.get('window').width;
 
-class Login extends Component {
+const Login = ({ navigation }) => {
 
-    state={
-        email:'',
-        password:'',
-        loading:false
-    }
+    const[email, setEmail] = useState('')
+    const[password, setPassword] = useState('')
+    const[restoreEmail, setRestoreEmail] = useState('')
+    const modalizeRef = React.useRef<Modalize>(null);
 
-    onBottomPress = () => {
-        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-        .then(this.onLoginSuccess)
+    const onOpen = () => {
+        modalizeRef.current?.open();
+    };
+
+    const onBottomPress = () => {
+        firebase.auth().signInWithEmailAndPassword(email, password)
         .catch(err => {
             Alert.alert('Error de autenticación', 'El email o contraseña introducidos no son correctos')
         })
-
-    
-    }
-    onLoginSuccess =  () =>{
-        this.setState({
-            error:'',
-            loading:false
-        })
     }
 
+    const restorePassowrd = () => {
+        var bd = new Fire()
+        bd.restorePassword(restoreEmail)
+        setRestoreEmail('')
+        modalizeRef.current.close()
+    }
 
-    render() {
-        const { navigation } = this.props
-        return (
+    return (
+        <>
             <View style={styles.container}>
                 <View style={styles.viewAbove}>
                     <Svg height="100%" width="100%" viewBox="0 0 1440 320" style={styles.svg}>
@@ -51,25 +51,38 @@ class Login extends Component {
                 <View style={styles.inputContainer}>
                     <View style={styles.mailContainer}>
                         <Ionicons style={[styles.formIcons]} name={'ios-mail'} color={'white'} size={30} />
-                        <TextInput placeholder="Introduce tu email" style={styles.input} value={this.state.email} onChangeText={ email => this.setState({email}) } />
+                        <TextInput placeholder="Introduce tu email" style={styles.input} value={email} onChangeText={ email => setEmail(email) } />
                     </View>
                     <View style={styles.mailContainer}>
                         <Ionicons style={{paddingRight: 15}} name={'ios-lock'} color={'white'} size={30} />
-                        <TextInput placeholder="Contraseña" style={styles.input} secureTextEntry value={this.state.password} onChangeText={password => this.setState({password})} />
+                        <TextInput placeholder="Contraseña" style={styles.input} secureTextEntry value={password} onChangeText={password => setPassword(password)} />
                     </View>
                 </View>
 
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity activeOpacity={0.9} style={styles.button} onPress={this.onBottomPress} >
+                    <TouchableOpacity activeOpacity={0.9} style={styles.button} onPress={onBottomPress} >
                         <Text style={styles.buttonText}>Acceder</Text>
                     </TouchableOpacity>
-                 </View>
-                 
-                 <Text style={styles.registerText}>¿No tienes una cuenta? <Text style={{fontFamily: 'Bold'}} onPress={() => navigation.navigate('Register')}>Regístrate.</Text></Text>
-
+                    </View>
+                    
+                    <Text style={styles.registerText}>¿No tienes una cuenta? <Text style={{fontFamily: 'Bold'}} onPress={() => navigation.navigate('Register')}>Regístrate.</Text></Text>
+                    <Text style={styles.registerText}>¿No recuerdas tu contraseña? <Text style={{fontFamily: 'Bold'}} onPress={onOpen}>Recuperar.</Text></Text>
             </View>
-        );
-    }
+            <Modalize ref={modalizeRef} adjustToContentHeight>
+                <View style={styles.modalContainer}>
+                    <View style={styles.mailContainer}>
+                        <Ionicons style={{paddingRight: 15}} name={'ios-mail'} color={'#2450E7'} size={30} />
+                        <TextInput placeholder="Escribe el email asociado a tu cuenta..." style={styles.inputRestore} value={restoreEmail} placeholderTextColor={"black"} onChangeText={email => setRestoreEmail(email)} />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity activeOpacity={0.9} style={styles.buttonRestore} onPress={restorePassowrd} >
+                            <Text style={styles.buttonTextRestore}>Restablecer</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modalize>
+        </>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -114,6 +127,16 @@ const styles = StyleSheet.create({
         fontSize: 15,
         flex: 1
     },
+    inputRestore: {
+        color: '#2450E7',
+        height: 50,
+        borderColor: '#2450E7',
+        borderWidth: 1.5,
+        borderRadius: 5,
+        paddingLeft: 10,
+        fontSize: 15,
+        flex: 1
+    },
     buttonContainer: {
         paddingHorizontal: 20
     },
@@ -127,6 +150,17 @@ const styles = StyleSheet.create({
         padding: 15,
         backgroundColor: 'white',
         borderRadius: 50
+    },
+    buttonRestore: {
+        padding: 15,
+        backgroundColor: '#2450E7',
+        borderRadius: 50
+    },
+    buttonTextRestore:{
+        textAlign: 'center',
+        color: 'white',
+        fontFamily: 'Bold',
+        fontSize: 20
     },
     logo: {
         color: 'white',
@@ -147,6 +181,11 @@ const styles = StyleSheet.create({
         fontSize: 15,
         alignSelf: 'center',
         marginTop: 30
+    },
+    modalContainer: {
+        justifyContent: 'center',
+        paddingVertical: 20,
+        paddingHorizontal: 20,
     }
 });
 

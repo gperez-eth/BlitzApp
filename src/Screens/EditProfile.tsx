@@ -7,14 +7,14 @@ import Fire from '../database/Fire'
 
 const screenWidth = Dimensions.get('window').width;
 
-const OnBoarding = ({ navigation }) => {
+const EditProfile = ({ modalizeRef, nombreEdit, apellidosEdit, usernameEdit, biographyEdit, avatarEdit, updateUserData }) => {
 
-    const [nombre, setNombre] = useState('')
-    const [apellidos, setApellidos] = useState('')
-    const [biography, setBiography] = useState('')
-    const [username, setUsername] = useState('')
-    const [avatar, setAvatar] = useState('')
-    const [isAvatar, setIsAvatar] = useState(false)
+    const [nombre, setNombre] = useState(nombreEdit)
+    const [apellidos, setApellidos] = useState(apellidosEdit)
+    const [biography, setBiography] = useState(biographyEdit)
+    const [username, setUsername] = useState(usernameEdit)
+    const [avatar, setAvatar] = useState(avatarEdit)
+    const [isAvatar, setIsAvatar] = useState(avatarEdit == '' ? false : true)
 
     let openImagePickerAsync = async () => {
         let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
@@ -40,14 +40,13 @@ const OnBoarding = ({ navigation }) => {
         } else {
             var bd = new Fire() 
             bd.updateProfile(nombre, apellidos, username, biography, avatar)
-            AsyncStorage.removeItem('NEWACCOUNT')
-            navigation.pop()
+            updateUserData()
+            modalizeRef.current.close()
         }
     }
 
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={styles.title}>Es hora de configurar tu perfil</Text>
             <View style={styles.avatarContainer}>
                 {
                     (isAvatar) ?
@@ -77,26 +76,21 @@ const OnBoarding = ({ navigation }) => {
             </View>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity activeOpacity={0.9} style={styles.button} onPress={finishRegister} >
-                    <Text style={styles.buttonText}>Finalizar</Text>
+                    <Text style={styles.buttonText}>Editar</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
     )
 }
 
-export default OnBoarding
+export default EditProfile
 
 const styles = StyleSheet.create({
 
     container:{
         flex: 1,
         backgroundColor: 'white',
-        padding: 40
-    },
-    title: {
-        color: 'blue',
-        fontSize: 30,
-        fontFamily: 'Semibold'
+        paddingHorizontal: 40
     },
     inputContainer: {
         paddingVertical: 20

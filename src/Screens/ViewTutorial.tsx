@@ -37,6 +37,12 @@ const ViewTutorial = ({ navigation, route }) => {
         extrapolate: 'clamp'
     });
 
+    const deleteTutorial = () => {
+        var bd = new Fire()
+        bd.deleteTutorial(tutorial.id)
+        navigation.pop()
+    }
+
     const giveLike = () => {
         var bd = new Fire()
         if(canLike) {
@@ -110,7 +116,19 @@ const ViewTutorial = ({ navigation, route }) => {
                     )
                 })}
             </Animated.ScrollView>
-            <ActionButton buttonColor={'black'} onPress={onOpen} renderIcon={() => <MaterialIcons name={'edit'} color={'white'} size={25}/>}/>  
+            {
+                firebase.auth().currentUser.uid == tutorial.createdBy ?
+                    <ActionButton buttonColor={'black'} >
+                        <ActionButton.Item onPress={onOpen}>
+                            <MaterialIcons name={'edit'} color={'white'} size={25}/>
+                        </ActionButton.Item>
+                        <ActionButton.Item onPress={deleteTutorial}>
+                            <MaterialIcons name={'delete'} color={'white'} size={25}/>
+                        </ActionButton.Item>
+                    </ActionButton>
+                :
+                    <ActionButton buttonColor={'black'} onPress={onOpen} renderIcon={() => <MaterialIcons name={'edit'} color={'white'} size={25}/>}/>
+            }
         </View>
         <Modalize ref={modalizeRef} adjustToContentHeight >
             <View style={styles.modalContainer}>

@@ -6,6 +6,7 @@ import Fire from '../database/Fire'
 const ExploreCategory = ({navigation, route}) => {
 
   const[tutorialCategory, setTutorialCategory] = useState([])
+  
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async() => {

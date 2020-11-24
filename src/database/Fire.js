@@ -264,6 +264,11 @@ class Fire {
         })
     }
 
+    deleteTutorial(tutorialID) {
+        let ref = this.tutorialesRef
+        ref.doc(tutorialID).delete()
+    }
+
     getUser(callback) {
         let ref = this.userRef
         let id = firebase.auth().currentUser.uid

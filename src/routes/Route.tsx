@@ -119,6 +119,7 @@ const Tab = createBottomTabNavigator();
 function BottomTabNavigator() {
   return (
     <Tab.Navigator
+      initialRouteName="Explore"
       tabBarOptions={{
           showLabel: false,
           activeTintColor: 'black',

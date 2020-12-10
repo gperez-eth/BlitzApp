@@ -30,11 +30,15 @@ const MisTutoriales = ({navigation}) => {
         <View style={[styles.container, {justifyContent: tutoriales.length > 0 ? 'flex-start' : 'center'}]}>
             {
                 (tutoriales.length > 0 ? 
-                  tutoriales.map((item) => {
-                    return (
-                        renderTutoriales(navigation, item)
-                    )
-                  })
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        {
+                            tutoriales.map((item) => {
+                                return (
+                                    renderTutoriales(navigation, item)
+                                )
+                              })
+                        }
+                    </ScrollView>
                 :
                 <View style={styles.writingContainer}>
                   <Image source={require('../assets/Writing.png')} style={styles.writingImage} resizeMode={"contain"}/>

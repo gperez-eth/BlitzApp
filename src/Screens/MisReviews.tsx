@@ -3,6 +3,7 @@ import { View, StyleSheet, Image, Text } from 'react-native';
 import { ReviewCard } from '../Components'
 import Fire from '../database/Fire'
 import firebase from 'firebase'
+import { ScrollView } from 'react-native-gesture-handler';
 
 const MisReviews = ({navigation}) => {
 
@@ -29,11 +30,15 @@ const MisReviews = ({navigation}) => {
         <View style={[styles.container, {justifyContent: tutoriales.length > 0 ? 'flex-start' : 'center'}]}>
             {
                 (tutoriales.length > 0 ? 
-                  tutoriales.map((item) => {
-                    return (
-                        renderTutoriales(navigation, item)
-                    )
-                  })
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        {
+                            tutoriales.map((item) => {
+                                return (
+                                    renderTutoriales(navigation, item)
+                                )
+                              })
+                        }
+                    </ScrollView>
                 :
                 <View style={styles.inspireContainer}>
                   <Image source={require('../assets/Inspire.png')} style={styles.inspireImage} resizeMode={"contain"}/>

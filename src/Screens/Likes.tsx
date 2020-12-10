@@ -41,12 +41,16 @@ export default class Explore extends Component {
         return (
             <View style={[styles.container, {justifyContent: this.state.likedTutorial.length > 0 ? 'flex-start' : 'center'}]}>
               {
-                (this.state.likedTutorial.length > 0 ? 
-                  this.state.likedTutorial.map((item) => {
-                    return (
-                        this.renderTutoriales(navigation, item)
-                    )
-                  })
+                (this.state.likedTutorial.length > 0 ?
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    {
+                      this.state.likedTutorial.map((item) => {
+                        return (
+                            this.renderTutoriales(navigation, item)
+                        )
+                      })
+                    }
+                  </ScrollView>
                 :
                 <View style={styles.likeContainer}>
                   <Image source={require('../assets/Like.png')} style={styles.likeImage} resizeMode={"contain"}/>
@@ -60,7 +64,6 @@ export default class Explore extends Component {
 }
 
 const styles = StyleSheet.create({
-
     container:{
         flex: 1,
         padding: 15,
